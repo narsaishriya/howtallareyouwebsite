@@ -5,10 +5,11 @@ from openpyxl.utils import get_column_letter
 import os
 from werkzeug.utils import secure_filename
 from functools import wraps
+from waitress import serve
 
 app = Flask(__name__)
-app.secret_key = os.environ.get("FLASK_SECRET_KEY", "dev-only-secret-key")
-OWNER_PASSWORD = os.environ.get("OWNER_PASSWORD", "change-me")
+app.secret_key = os.environ.get("FLASK_SECRET_KEY")
+OWNER_PASSWORD = os.environ.get("OWNER_PASSWORD")
 
 EXCEL_FILE = "participants.xlsx"
 PHOTO_FOLDER = "photos"
@@ -361,5 +362,16 @@ def delete_participant(participant_number):
     return redirect(url_for("view_participants"))
 
 if __name__ == "__main__":
+    missing_settings = [
+        name for name, value in {
+            "FLASK_SECRET_KEY": app.secret_key,
+            "OWNER_PASSWORD": OWNER_PASSWORD,
+        }.items() if not value
+    ]
+    if missing_settings:
+        raise RuntimeError(f"Set required environment variables: {', '.join(missing_settings)}")
+
     create_excel_file()
-    app.run(debug=True, host='0.0.0.0', port=5000)
+    host = os.environ.get("WEB_HOST", "127.0.0.1")
+    port = int(os.environ.get("WEB_PORT", "5000"))
+    serve(app, host=host, port=port)
