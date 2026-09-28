@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All Participants</title>
+
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f5f5;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        h1 {
+            color: #333;
+            margin: 0;
+            font-size: 28px;
+        }
+
+        .back-link {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #2196F3;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+
+        .back-link:hover {
+            background-color: #0b7dda;
+        }
+
+        .participant-count {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #e3f2fd;
+            color: #1976d2;
+            border-radius: 6px;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .participants-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 20px;
+        }
+
+        .participant-card {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 12px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .participant-card:hover {
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+            transform: translateY(-4px);
+        }
+
+        .card-header {
+            position: relative;
+            cursor: pointer;
+            padding: 15px;
+        }
+
+        .participant-photo {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+            background: #e0e0e0;
+        }
+
+        .card-info {
+            padding: 20px;
+        }
+
+        .participant-number {
+            font-size: 11px;
+            color: #999;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .participant-name {
+            font-size: 22px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .participant-height {
+            font-size: 16px;
+            color: #666;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .card-actions {
+            display: flex;
+            gap: 10px;
+            padding: 0 20px 15px;
+        }
+
+        .btn-expand {
+            flex: 1;
+            padding: 10px;
+            background-color: #2196F3;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .btn-expand:hover {
+            background-color: #0b7dda;
+        }
+
+        .btn-delete {
+            padding: 10px 15px;
+            background-color: #f44336;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .btn-delete:hover {
+            background-color: #da190b;
+        }
+
+        .edit-form {
+            display: none;
+            padding: 20px;
+            background: #f9f9f9;
+            border-top: 2px solid #e0e0e0;
+        }
+
+        .edit-form.show {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: bold;
+            color: #555;
+            margin-bottom: 5px;
+            font-size: 14px;
+        }
+
+        .form-group input,
+        .form-group button {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            box-sizing: border-box;
+            font-size: 14px;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #2196F3;
+            box-shadow: 0 0 5px rgba(33, 150, 243, 0.3);
+        }
+
+        .photo-preview {
+            width: 100%;
+            max-height: 150px;
+            object-fit: cover;
+            border-radius: 6px;
+            margin-bottom: 10px;
+            display: none;
+        }
+
+        .photo-preview.show {
+            display: block;
+        }
+
+        .form-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .btn-save {
+            flex: 1;
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .btn-save:hover {
+            background-color: #45a049;
+        }
+
+        .btn-cancel {
+            flex: 1;
+            padding: 10px;
+            background-color: #ccc;
+            color: #333;
+            border: none;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .btn-cancel:hover {
+            background-color: #bbb;
+        }
+
+        .no-participants {
+            text-align: center;
+            padding: 60px 20px;
+            color: #999;
+        }
+
+        .no-participants p {
+            font-size: 18px;
+            margin-bottom: 20px;
+        }
+
+        .no-participants a {
+            display: inline-block;
+            padding: 12px 30px;
+            background-color: #2196F3;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+
+        .no-participants a:hover {
+            background-color: #0b7dda;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            color: #999;
+            font-size: 12px;
+        }
+
+        .loading.show {
+            display: block;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .logout-link {
+            display: inline-block;
+            padding: 10px 15px;
+            background-color: #f44336;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: bold;
+            font-size: 13px;
+            transition: background-color 0.3s;
+        }
+
+        .logout-link:hover {
+            background-color: #da190b;
+        }
+
+        /* Mobile responsive styles */
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+                border-radius: 8px;
+            }
+
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 12px;
+                margin-bottom: 20px;
+            }
+
+            h1 {
+                font-size: 22px;
+                width: 100%;
+            }
+
+            .header-actions {
+                width: 100%;
+                gap: 8px;
+            }
+
+            .back-link,
+            .logout-link {
+                flex: 1;
+                min-width: 140px;
+                padding: 9px 12px;
+                font-size: 12px;
+                text-align: center;
+            }
+
+            .participant-count {
+                width: 100%;
+                text-align: center;
+                font-size: 13px;
+                padding: 8px 12px;
+            }
+
+            .participants-grid {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+
+            .participant-card {
+                border-radius: 8px;
+            }
+
+            .participant-photo {
+                height: 200px;
+            }
+
+            .card-info {
+                padding: 15px;
+            }
+
+            .participant-name {
+                font-size: 18px;
+            }
+
+            .participant-height {
+                font-size: 14px;
+                margin-bottom: 12px;
+            }
+
+            .card-actions {
+                flex-direction: column;
+                gap: 8px;
+                padding: 0 15px 12px;
+            }
+
+            .btn-expand,
+            .btn-delete {
+                padding: 10px;
+                font-size: 13px;
+                min-height: 42px;
+            }
+
+            .form-group input,
+            .form-group button {
+                font-size: 13px;
+                padding: 10px;
+                min-height: 42px;
+            }
+
+            .form-buttons {
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            .btn-save,
+            .btn-cancel {
+                padding: 10px;
+                font-size: 13px;
+                min-height: 42px;
+            }
+
+            .edit-form {
+                padding: 15px;
+            }
+
+            .form-group {
+                margin-bottom: 12px;
+            }
+
+            .form-group label {
+                font-size: 13px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 10px;
+            }
+
+            .container {
+                padding: 15px;
+            }
+
+            h1 {
+                font-size: 20px;
+            }
+
+            .back-link,
+            .logout-link {
+                font-size: 11px;
+                padding: 8px 10px;
+            }
+
+            .participant-count {
+                font-size: 12px;
+            }
+
+            .participant-photo {
+                height: 180px;
+            }
+
+            .participant-name {
+                font-size: 16px;
+                margin-bottom: 6px;
+            }
+
+            .participant-number {
+                font-size: 10px;
+                margin-bottom: 6px;
+            }
+
+            .participant-height {
+                font-size: 13px;
+                margin-bottom: 10px;
+            }
+
+            .btn-expand,
+            .btn-delete,
+            .form-group input,
+            .form-group button,
+            .btn-save,
+            .btn-cancel {
+                font-size: 12px;
+                padding: 9px;
+                min-height: 40px;
+            }
+
+            .no-participants p {
+                font-size: 16px;
+            }
+
+            .no-participants a {
+                font-size: 12px;
+                padding: 10px 20px;
+            }
+        }
+    </style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="header">
+        <h1>👥 All Participants</h1>
+        <div class="header-actions">
+            <a href="/" class="back-link">➕ Add New Participant</a>
+            <a href="/owner/logout" class="logout-link">🚪 Logout</a>
+        </div>
+        {% if participants %}
+        <span class="participant-count">Total: {{ participants|length }}</span>
+        {% endif %}
+    </div>
+
+    {% if participants %}
+    <div class="participants-grid">
+        {% for participant in participants %}
+        <div class="participant-card" data-participant-number="{{ participant.number }}">
+            <div class="card-header">
+                {% if participant.photo %}
+                <img src="/photos/{{ participant.photo }}?t={{ range(1, 1000000) | random }}" alt="Photo" class="participant-photo">
+                {% else %}
+                <div class="participant-photo" style="display: flex; align-items: center; justify-content: center; background: #ddd; color: #999;">📷 No photo</div>
+                {% endif %}
+            </div>
+
+            <div class="card-info">
+                <div class="participant-number">{{ participant.number }}</div>
+                <div class="participant-name">{{ participant.name }} {{ participant.surname }}</div>
+                <div class="participant-height">📏 {{ participant.height }} cm</div>
+
+                <div class="card-actions">
+                    <button class="btn-expand" onclick="toggleEditForm(this)">✏️ Edit</button>
+                    <form method="POST" action="/delete/{{ participant.number }}" style="flex: 1;">
+                        <button type="submit" class="btn-delete" onclick="return confirm('Are you sure you want to delete {{ participant.name }} {{ participant.surname }}?')" style="width: 100%; margin: 0;">🗑️ Delete</button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="edit-form">
+                <form onsubmit="saveParticipant(event, '{{ participant.number }}')">
+                    <div class="form-group">
+                        <label>Photo</label>
+                        <input type="file" name="photo" accept="image/*" onchange="previewPhoto(event)">
+                        <img class="photo-preview" alt="Photo preview">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Name</label>
+                        <input type="text" name="name" value="{{ participant.name }}" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Surname</label>
+                        <input type="text" name="surname" value="{{ participant.surname }}" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Measured Height (cm)</label>
+                        <input type="number" name="actual_height" step="0.1" min="50" max="250" value="{{ participant.height }}" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Computer Measured Height (cm) <span style="color: #999;">(optional)</span></label>
+                        <input type="number" name="computer_height" step="0.1" min="50" max="250" placeholder="Will auto-calculate error">
+                    </div>
+
+                    <div class="loading"></div>
+
+                    <div class="form-buttons">
+                        <button type="submit" class="btn-save">💾 Save</button>
+                        <button type="button" class="btn-cancel" onclick="toggleEditForm(this.closest('.participant-card').querySelector('.btn-expand'))">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="no-participants">
+        <p>📭 No participants yet</p>
+        <a href="/">➕ Add First Participant</a>
+    </div>
+    {% endif %}
+
+</div>
+
+<script>
+    function toggleEditForm(btn) {
+        const card = btn.closest('.participant-card');
+        const editForm = card.querySelector('.edit-form');
+        editForm.classList.toggle('show');
+        btn.textContent = editForm.classList.contains('show') ? '✕ Close' : '✏️ Edit';
+    }
+
+    function previewPhoto(event) {
+        const preview = event.target.closest('.participant-card').querySelector('.photo-preview');
+        const file = event.target.files[0];
+        
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                preview.src = e.target.result;
+                preview.classList.add('show');
+            };
+            reader.readAsDataURL(file);
+        }
+    }
+
+    function saveParticipant(event, participantNumber) {
+        event.preventDefault();
+        
+        const card = event.target.closest('.participant-card');
+        const form = event.target;
+        const loading = card.querySelector('.loading');
+        
+        loading.classList.add('show');
+        loading.textContent = '⏳ Saving...';
+
+        const formData = new FormData(form);
+
+        fetch(`/edit/${participantNumber}`, {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Update card with new data
+                const participant = data.participant;
+                card.querySelector('.participant-number').textContent = participant.number;
+                card.querySelector('.participant-name').textContent = `${participant.name} ${participant.surname}`;
+                card.querySelector('.participant-height').textContent = `📏 ${participant.height} cm`;
+                
+                if (participant.photo) {
+                    const img = card.querySelector('.participant-photo');
+                    img.src = `/photos/${participant.photo}?t=${new Date().getTime()}`;
+                }
+                
+                // Close form
+                toggleEditForm(card.querySelector('.btn-expand'));
+                loading.classList.remove('show');
+                loading.textContent = '';
+            }
+        })
+        .catch(error => {
+            loading.textContent = '❌ Error saving. Please try again.';
+            console.error('Error:', error);
+        });
+    }
+</script>
+
+</body>
+
+</html>

@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Height Measurement</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            width: 100%;
+            max-width: 500px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e0e0e0;
+        }
+
+        h1 {
+            margin-bottom: 15px;
+            color: #333;
+            text-align: center;
+            font-size: 24px;
+        }
+
+        .step-indicator {
+            font-size: 11px;
+            color: #999;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .photo-section {
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #f9f9f9;
+            border-radius: 8px;
+            border: 2px solid #e0e0e0;
+        }
+
+        .photo-section label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: bold;
+            color: #333;
+            font-size: 13px;
+        }
+
+        #photoPreview {
+            max-width: 100%;
+            max-height: 250px;
+            border-radius: 8px;
+            display: none;
+            margin-bottom: 12px;
+            border: 2px solid #4CAF50;
+            box-shadow: 0 2px 8px rgba(76, 175, 80, 0.2);
+        }
+
+        .photo-status {
+            font-size: 12px;
+            color: #4CAF50;
+            margin-bottom: 10px;
+            font-weight: bold;
+            display: none;
+        }
+
+        .photo-status.show {
+            display: block;
+        }
+
+        .camera-button {
+            width: 100%;
+            padding: 12px;
+            background-color: #2196F3;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.3s;
+            font-size: 14px;
+            touch-action: manipulation;
+        }
+
+        .camera-button:hover {
+            background-color: #0b7dda;
+        }
+
+        .camera-button:active {
+            background-color: #0056b3;
+        }
+
+        #photoInput {
+            display: none;
+        }
+
+        .error-message {
+            background-color: #ffebee;
+            color: #c62828;
+            padding: 12px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            display: none;
+            font-size: 13px;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        label {
+            display: block;
+            margin-top: 12px;
+            margin-bottom: 6px;
+            font-weight: bold;
+            color: #555;
+            font-size: 13px;
+        }
+
+        input[type="text"],
+        input[type="number"] {
+            width: 100%;
+            padding: 11px;
+            box-sizing: border-box;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 15px;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+
+        input[type="number"] {
+            -moz-appearance: textfield;
+        }
+
+        input[type="number"]::-webkit-outer-spin-button,
+        input[type="number"]::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #4CAF50;
+            box-shadow: 0 0 5px rgba(76, 175, 80, 0.3);
+        }
+
+        .form-section {
+            margin-bottom: 12px;
+        }
+
+        button[type="submit"] {
+            width: 100%;
+            margin-top: 20px;
+            padding: 13px;
+            cursor: pointer;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 15px;
+            font-weight: bold;
+            transition: background-color 0.3s;
+            touch-action: manipulation;
+        }
+
+        button[type="submit"]:hover {
+            background-color: #45a049;
+        }
+
+        button[type="submit"]:active {
+            background-color: #3d8b40;
+        }
+
+        button[type="submit"]:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+
+        .owner-section {
+            text-align: center;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #eee;
+        }
+
+        .owner-link {
+            color: #999;
+            text-decoration: none;
+            font-size: 11px;
+            display: inline-block;
+            padding: 8px 0;
+        }
+
+        .owner-link:hover {
+            color: #666;
+            text-decoration: underline;
+        }
+
+        /* Mobile optimizations */
+        @media (max-width: 600px) {
+            body {
+                padding: 10px;
+                min-height: auto;
+            }
+
+            .container {
+                padding: 18px;
+                border-radius: 8px;
+            }
+
+            h1 {
+                font-size: 20px;
+                margin-bottom: 10px;
+            }
+
+            .step-indicator {
+                font-size: 10px;
+                margin-bottom: 15px;
+            }
+
+            .photo-section {
+                padding: 12px;
+                margin-bottom: 15px;
+            }
+
+            .photo-section label {
+                font-size: 12px;
+            }
+
+            #photoPreview {
+                max-height: 200px;
+                margin-bottom: 10px;
+            }
+
+            label {
+                font-size: 12px;
+                margin-top: 10px;
+                margin-bottom: 5px;
+            }
+
+            input[type="text"],
+            input[type="number"],
+            .camera-button,
+            button[type="submit"] {
+                font-size: 14px;
+                padding: 10px;
+                min-height: 44px;
+            }
+
+            button[type="submit"] {
+                margin-top: 18px;
+                padding: 12px;
+            }
+
+            .error-message {
+                font-size: 12px;
+                padding: 10px;
+                margin-bottom: 15px;
+            }
+
+            .owner-section {
+                margin-top: 12px;
+                padding-top: 12px;
+            }
+
+            .owner-link {
+                font-size: 10px;
+                padding: 6px 0;
+            }
+        }
+
+        @media (max-width: 400px) {
+            .container {
+                padding: 15px;
+            }
+
+            h1 {
+                font-size: 18px;
+            }
+
+            input[type="text"],
+            input[type="number"],
+            .camera-button,
+            button[type="submit"] {
+                font-size: 13px;
+                min-height: 42px;
+            }
+        }
+    </style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>📸 Height Measurement</h1>
+    <div class="step-indicator">Step 1: Photo → Step 2: Details</div>
+
+    {% if request.args.get('error') %}
+    <div class="error-message show">
+        {{ request.args.get('error') }}
+    </div>
+    {% endif %}
+
+    {% if error %}
+    <div class="error-message show">
+        {{ error }}
+    </div>
+    {% endif %}
+
+    <form method="POST" enctype="multipart/form-data">
+
+        <!-- Photo Section -->
+        <div class="photo-section">
+            <label for="photoInput">1. Take or Upload Photo</label>
+            <img id="photoPreview" alt="Photo preview">
+            <div class="photo-status" id="photoStatus">✅ Photo selected</div>
+            <button type="button" class="camera-button" onclick="document.getElementById('photoInput').click()">
+                📷 Choose Photo
+            </button>
+            <input type="file" id="photoInput" name="photo" accept="image/*" required onchange="previewPhoto(this)">
+        </div>
+
+        <!-- Form Section -->
+        <div class="form-section">
+            <label for="name">2. Name</label>
+            <input
+                type="text"
+                id="name"
+                name="name"
+                required
+                autocomplete="given-name"
+            >
+        </div>
+
+        <div class="form-section">
+            <label for="surname">Surname</label>
+            <input
+                type="text"
+                id="surname"
+                name="surname"
+                required
+                autocomplete="family-name"
+            >
+        </div>
+
+        <div class="form-section">
+            <label for="actual_height">3. Measured Height (cm)</label>
+            <input
+                type="number"
+                id="actual_height"
+                name="actual_height"
+                step="0.1"
+                min="50"
+                max="250"
+                required
+                inputmode="decimal"
+            >
+        </div>
+
+        <button type="submit">
+            ✅ Save Participant
+        </button>
+
+    </form>
+
+    <div class="owner-section">
+        <a href="/owner/login" class="owner-link">🔐 Owner Login</a>
+    </div>
+
+</div>
+
+<script>
+    function previewPhoto(input) {
+        const preview = document.getElementById('photoPreview');
+        const photoStatus = document.getElementById('photoStatus');
+        const file = input.files[0];
+        
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                preview.src = e.target.result;
+                preview.style.display = 'block';
+                photoStatus.classList.add('show');
+            };
+            reader.readAsDataURL(file);
+        } else {
+            preview.style.display = 'none';
+            photoStatus.classList.remove('show');
+        }
+    }
+</script>
+
+</body>
+
+</html>

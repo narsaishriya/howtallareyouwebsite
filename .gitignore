@@ -1,0 +1,43 @@
+# Python environments and generated files
+.venv/
+venv/
+env/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+
+# Local application data
+web_app/participants.xlsx
+web_app/photos/*
+!web_app/photos/.gitkeep
+web_app/.env
+
+# Generated outputs and local experiment data
+outputs/
+diagnostics_*/
+*.log
+
+# Separate height-estimation repository
+how-tall-are-you-26P60/
+
+# Large model and dataset artifacts
+*.ckpt
+*.onnx
+*.pth
+*.pt
+*.safetensors
+*.pkl
+*.npz
+*.npy
+*.bin
+*.h5
+
+# Secrets and local configuration
+.env
+.env.*
+!.env.example
+*.pem
+*.key

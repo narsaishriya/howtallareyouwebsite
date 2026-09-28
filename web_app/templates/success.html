@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Participant Recorded Successfully</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f0f0f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .success-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            padding: 60px 40px;
+            text-align: center;
+            max-width: 500px;
+            animation: slideUp 0.6s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .success-icon {
+            font-size: 80px;
+            margin-bottom: 20px;
+            animation: bounce 0.6s ease-out;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+
+        h1 {
+            color: #333;
+            font-size: 32px;
+            margin-bottom: 15px;
+            font-weight: 700;
+        }
+
+        .subtitle {
+            color: #666;
+            font-size: 16px;
+            margin-bottom: 30px;
+        }
+
+        .participant-info {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+        }
+
+        .info-label {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            opacity: 0.9;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .info-value {
+            font-size: 36px;
+            font-weight: bold;
+            letter-spacing: 2px;
+        }
+
+        .action-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .btn {
+            padding: 16px 30px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: #f0f0f0;
+            color: #333;
+        }
+
+        .btn-secondary:hover {
+            background: #e0e0e0;
+            transform: translateY(-3px);
+        }
+
+        .confetti {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            background: #667eea;
+            animation: fall 3s ease-in forwards;
+        }
+
+        @keyframes fall {
+            to {
+                transform: translateY(100vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .success-container {
+                padding: 40px 20px;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+
+            .success-icon {
+                font-size: 60px;
+            }
+
+            .info-value {
+                font-size: 28px;
+            }
+
+            .rank-emoji {
+                font-size: 50px;
+            }
+
+            .rank-title {
+                font-size: 18px;
+            }
+
+            .rank-message {
+                font-size: 13px;
+            }
+
+            .rank-subtitle {
+                font-size: 12px;
+            }
+
+            .btn {
+                padding: 14px 20px;
+                font-size: 14px;
+            }
+        }
+
+        .ranking-info {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 16px;
+            margin: 25px 0;
+            text-align: center;
+            animation: slideUp 0.6s ease-out 0.2s both;
+        }
+
+        .rank-emoji {
+            font-size: 60px;
+            display: block;
+            margin-bottom: 15px;
+            animation: bounce 0.6s ease-out;
+        }
+
+        .rank-title {
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            letter-spacing: 0.5px;
+        }
+
+        .rank-message {
+            font-size: 15px;
+            line-height: 1.6;
+            margin-bottom: 10px;
+            font-weight: 500;
+        }
+
+        .rank-message strong {
+            font-weight: 700;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 2px 8px;
+            border-radius: 4px;
+        }
+
+        .rank-subtitle {
+            font-size: 13px;
+            opacity: 0.95;
+            margin-bottom: 0;
+            font-style: italic;
+        }
+    </style>
+
+</head>
+
+<body>
+
+<div class="success-container">
+    <div class="success-icon">✅</div>
+    <h1>Success!</h1>
+    <p class="subtitle">Participant has been recorded successfully</p>
+
+    <div class="participant-info">
+        <div class="info-label">Participant Number</div>
+        <div class="info-value">{{ participant_number }}</div>
+    </div>
+
+    {% if rank_data %}
+    <div class="ranking-info">
+        {% if rank_data.is_tallest %}
+        <div class="rank-emoji">👑</div>
+        <h2 class="rank-title">New Height Champion!</h2>
+        <p class="rank-message">You're currently the <strong>tallest of {{ rank_data.total }} participants</strong>.</p>
+        <p class="rank-subtitle">Keep that crown shiny! 👏</p>
+        
+        {% elif rank_data.is_shortest %}
+        <div class="rank-emoji">🌱</div>
+        <h2 class="rank-title">Great Job Participating!</h2>
+        <p class="rank-message">You're <strong>{{ rank_data.rank }}</strong> out of <strong>{{ rank_data.total }} participants</strong>.</p>
+        <p class="rank-subtitle">Every measurement counts! 📊</p>
+        
+        {% elif rank_data.rank <= 5 %}
+        <div class="rank-emoji">🏆</div>
+        <h2 class="rank-title">Top 5 Performer!</h2>
+        <p class="rank-message">You're the <strong>#{{ rank_data.rank }} tallest out of {{ rank_data.total }} participants!</strong></p>
+        <p class="rank-subtitle">You're taller than <strong>{{ rank_data.percentile }}%</strong> of participants. 🎯</p>
+        
+        {% elif rank_data.percentile >= 75 %}
+        <div class="rank-emoji">🏅</div>
+        <h2 class="rank-title">Above Average Height!</h2>
+        <p class="rank-message">You rank <strong>#{{ rank_data.rank }} out of {{ rank_data.total }}</strong>.</p>
+        <p class="rank-subtitle">You're taller than <strong>{{ rank_data.percentile }}%</strong> of participants. 💪</p>
+        
+        {% elif rank_data.percentile >= 50 %}
+        <div class="rank-emoji">🌟</div>
+        <h2 class="rank-title">Right in the Middle!</h2>
+        <p class="rank-message">You rank <strong>#{{ rank_data.rank }} out of {{ rank_data.total }}</strong>.</p>
+        <p class="rank-subtitle">You're taller than <strong>{{ rank_data.percentile }}%</strong> of participants. ✨</p>
+        
+        {% else %}
+        <div class="rank-emoji">📈</div>
+        <h2 class="rank-title">You're On the Chart!</h2>
+        <p class="rank-message">You rank <strong>#{{ rank_data.rank }} out of {{ rank_data.total }}</strong>.</p>
+        <p class="rank-subtitle">You're taller than <strong>{{ rank_data.percentile }}%</strong> of participants. 📊</p>
+        {% endif %}
+    </div>
+    {% endif %}
+
+    <div class="action-buttons">
+        <a href="/" class="btn btn-primary">➕ Add Another Participant</a>
+    </div>
+</div>
+
+<script>
+    // Create confetti animation
+    function createConfetti() {
+        for (let i = 0; i < 30; i++) {
+            const confetti = document.createElement('div');
+            confetti.className = 'confetti';
+            confetti.style.left = Math.random() * 100 + 'vw';
+            confetti.style.delay = Math.random() * 0.3 + 's';
+            confetti.style.backgroundColor = ['#667eea', '#764ba2', '#2196F3', '#4CAF50'][Math.floor(Math.random() * 4)];
+            document.body.appendChild(confetti);
+
+            setTimeout(() => confetti.remove(), 3300);
+        }
+    }
+
+    createConfetti();
+</script>
+
+</body>
+
+</html>
