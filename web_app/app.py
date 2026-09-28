@@ -5,14 +5,17 @@ from openpyxl.utils import get_column_letter
 import os
 from werkzeug.utils import secure_filename
 from functools import wraps
+from threading import Lock
 from waitress import serve
 
 app = Flask(__name__)
 app.secret_key = os.environ.get("FLASK_SECRET_KEY")
 OWNER_PASSWORD = os.environ.get("OWNER_PASSWORD")
+DATA_LOCK = Lock()
 
-EXCEL_FILE = "participants.xlsx"
-PHOTO_FOLDER = "photos"
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+EXCEL_FILE = os.path.join(BASE_DIR, "participants.xlsx")
+PHOTO_FOLDER = os.path.join(BASE_DIR, "photos")
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 
 # Ensure photos folder exists
@@ -134,43 +137,43 @@ def index():
         except ValueError:
             return render_template("index.html", error="❌ Please enter a valid height in cm.")
         
-        participant_number = get_next_participant_number()
-        
-        # Save photo with participant number as filename
-        file_ext = os.path.splitext(photo.filename)[1].lower()
-        photo_filename = f"{participant_number}{file_ext}"
-        photo_path = os.path.join(app.config['UPLOAD_FOLDER'], photo_filename)
-        photo.save(photo_path)
+        with DATA_LOCK:
+            participant_number = get_next_participant_number()
 
-        workbook = load_workbook(EXCEL_FILE)
-        sheet = workbook["Participants"]
+            # Save photo with participant number as filename
+            file_ext = os.path.splitext(photo.filename)[1].lower()
+            photo_filename = f"{participant_number}{file_ext}"
+            photo_path = os.path.join(app.config['UPLOAD_FOLDER'], photo_filename)
+            photo.save(photo_path)
 
-        sheet.append([
-            participant_number,
-            name,
-            surname,
-            actual_height,
-            "",  # Computer Measured Height (empty initially)
-            "",  # Error (empty initially)
-            photo_filename  # Store filename for reference
-        ])
+            workbook = load_workbook(EXCEL_FILE)
+            sheet = workbook["Participants"]
 
-        # Add photo to Excel
-        photo_path = os.path.join(app.config['UPLOAD_FOLDER'], photo_filename)
-        if os.path.exists(photo_path):
-            try:
-                img = XLImage(photo_path)
-                img.width = 100
-                img.height = 100
-                # Add image to the photo column (G) of the new row
-                sheet.add_image(img, f'G{sheet.max_row}')
-                # Adjust row height to fit image
-                sheet.row_dimensions[sheet.max_row].height = 105
-            except Exception as e:
-                print(f"Warning: Could not embed image: {e}")
+            sheet.append([
+                participant_number,
+                name,
+                surname,
+                actual_height,
+                "",  # Computer Measured Height (empty initially)
+                "",  # Error (empty initially)
+                photo_filename  # Store filename for reference
+            ])
 
-        workbook.save(EXCEL_FILE)
-        workbook.close()
+            # Add photo to Excel
+            if os.path.exists(photo_path):
+                try:
+                    img = XLImage(photo_path)
+                    img.width = 100
+                    img.height = 100
+                    # Add image to the photo column (G) of the new row
+                    sheet.add_image(img, f'G{sheet.max_row}')
+                    # Adjust row height to fit image
+                    sheet.row_dimensions[sheet.max_row].height = 105
+                except Exception as e:
+                    print(f"Warning: Could not embed image: {e}")
+
+            workbook.save(EXCEL_FILE)
+            workbook.close()
 
         return redirect(
             url_for(
