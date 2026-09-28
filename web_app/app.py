@@ -2,6 +2,7 @@ from flask import Flask, render_template, request, redirect, url_for, send_from_
 from openpyxl import Workbook, load_workbook
 from openpyxl.drawing.image import Image as XLImage
 from openpyxl.utils import get_column_letter
+from PIL import Image, UnidentifiedImageError
 import os
 from werkzeug.utils import secure_filename
 from functools import wraps
@@ -26,6 +27,22 @@ app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max file size
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+def save_photo_as_jpeg(photo, filename):
+    """Decode the upload and save it as a standard RGB JPEG."""
+    photo_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+    try:
+        with Image.open(photo.stream) as image:
+            if image.mode in ('RGBA', 'LA'):
+                background = Image.new('RGB', image.size, 'white')
+                background.paste(image, mask=image.getchannel('A'))
+                image = background
+            else:
+                image = image.convert('RGB')
+            image.save(photo_path, format='JPEG', quality=92)
+    except (UnidentifiedImageError, OSError) as error:
+        raise ValueError("The uploaded file is not a valid image") from error
+    return photo_path
 
 def login_required(f):
     """Decorator to require owner login"""
@@ -140,11 +157,12 @@ def index():
         with DATA_LOCK:
             participant_number = get_next_participant_number()
 
-            # Save photo with participant number as filename
-            file_ext = os.path.splitext(photo.filename)[1].lower()
-            photo_filename = f"{participant_number}{file_ext}"
-            photo_path = os.path.join(app.config['UPLOAD_FOLDER'], photo_filename)
-            photo.save(photo_path)
+            # Normalize every accepted upload to P00X.jpg.
+            photo_filename = f"{participant_number}.jpg"
+            try:
+                photo_path = save_photo_as_jpeg(photo, photo_filename)
+            except ValueError as error:
+                return render_template("index.html", error=f"❌ {error}")
 
             workbook = load_workbook(EXCEL_FILE)
             sheet = workbook["Participants"]
